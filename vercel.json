@@ -1,0 +1,51 @@
+{
+  "version": 2,
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/assets/(.*\\.js)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/assets/(.*\\.css)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Frame-Options",
+          "value": "ALLOWALL"
+        },
+        {
+          "key": "Content-Security-Policy",
+          "value": "frame-ancestors 'self' telegram.org telegram.me t.me;"
+        }
+      ]
+    }
+  ],
+  "trailingSlash": false,
+  "github": {
+    "enabled": true,
+    "autoJobCancelation": true,
+    "autoDeploy": true,
+    "silent": false
+  },
+  "buildCommand": "pnpm run build",
+  "outputDirectory": "dist"
+}
