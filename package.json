@@ -8,7 +8,8 @@
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
-    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
+    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
+    "deploy": "pnpm build && vercel --prod"
   },
   "dependencies": {
     "pinia": "^2.3.1",
@@ -25,6 +26,7 @@
     "eslint": "^9.35.0",
     "eslint-plugin-vue": "^9.33.0",
     "prettier": "^3.6.2",
+    "sass": "^1.88.0",
     "typescript": "^5.9.2",
     "vite": "^6.3.6",
     "vue-tsc": "^2.2.12"

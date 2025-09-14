@@ -1,3 +1,32 @@
+<template>
+  <div class="home">
+    <h1>Vue 3 Telegram Web App</h1>
+    <h2>тест</h2>
+
+    <div v-if="isReady" class="status ready">✅ Telegram Web App Ready</div>
+    <div v-else class="status not-ready">⏳ Loading Telegram API...</div>
+
+    <TelegramUserInfo :user="user" />
+
+    <div class="demo-section">
+      <h2>Demo Counter</h2>
+      <button @click="increment" class="counter-btn">Count: {{ count }}</button>
+    </div>
+
+    <div class="actions">
+      <button @click="sendTestData" class="action-btn">Send Test Data</button>
+      <button @click="closeApp" class="action-btn danger">Close App</button>
+    </div>
+
+    <div class="debug-info" v-if="tg">
+      <h3>Debug Info:</h3>
+      <p>Platform: {{ tg.platform }}</p>
+      <p>Version: {{ tg.version }}</p>
+      <p>Theme: {{ tg.colorScheme }}</p>
+    </div>
+  </div>
+</template>
+
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { useTelegram } from "@/composables/useTelegram";
@@ -43,35 +72,7 @@ const sendTestData = (): void => {
 };
 </script>
 
-<template>
-  <div class="home">
-    <h1>Vue 3 Telegram Web App</h1>
-
-    <div v-if="isReady" class="status ready">✅ Telegram Web App Ready</div>
-    <div v-else class="status not-ready">⏳ Loading Telegram API...</div>
-
-    <TelegramUserInfo :user="user" />
-
-    <div class="demo-section">
-      <h2>Demo Counter</h2>
-      <button @click="increment" class="counter-btn">Count: {{ count }}</button>
-    </div>
-
-    <div class="actions">
-      <button @click="sendTestData" class="action-btn">Send Test Data</button>
-      <button @click="closeApp" class="action-btn danger">Close App</button>
-    </div>
-
-    <div class="debug-info" v-if="tg">
-      <h3>Debug Info:</h3>
-      <p>Platform: {{ tg.platform }}</p>
-      <p>Version: {{ tg.version }}</p>
-      <p>Theme: {{ tg.colorScheme }}</p>
-    </div>
-  </div>
-</template>
-
-<style scoped>
+<style scoped lang="scss">
 .home {
   padding: 20px;
   max-width: 600px;
