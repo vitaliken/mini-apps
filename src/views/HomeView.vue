@@ -1,5 +1,5 @@
 <template>
-  <div class="home-container" :class="{ 'navigating': isNavigating }">
+  <div class="home-container" :class="{ navigating: isNavigating }">
     <!-- Фон с анимацией -->
     <div class="cosmic-background">
       <div class="stars"></div>
@@ -11,14 +11,22 @@
     <header class="app-header">
       <div class="user-info">
         <div class="avatar" v-if="user?.photo_url">
-          <img :src="user.photo_url" alt="User avatar">
+          <img :src="user.photo_url" alt="User avatar" />
         </div>
-        <div class="user-details">
-          <h2 class="username">{{ user?.first_name || 'Player' }}</h2>
-          <div class="stats">
-            <span class="balance">🪙 {{ formatNumber(balance) }}</span>
-            <span class="rating">⭐ {{ formatNumber(rating) }}</span>
-          </div>
+        <div class="avatar" v-else>
+          <div class="avatar-default">👤</div>
+        </div>
+        <div class="username">
+          {{
+            user?.first_name ||
+            'Player layer layer layer layer layer layer layer layer layer layer layer layer '
+          }}
+        </div>
+      </div>
+      <div class="user-details">
+        <div class="stats">
+          <span class="balance">🪙 {{ formatNumber(balance) }}</span>
+          <span class="rating">⭐ {{ formatNumber(rating) }}</span>
         </div>
       </div>
     </header>
@@ -31,11 +39,11 @@
       </div>
 
       <div class="games-container">
-        <div 
-          v-for="game in games" 
-          :key="game.id" 
+        <div
+          v-for="game in games"
+          :key="game.id"
           class="game-card"
-          @click="router.push(game.route)"
+          @click="navigateTo(game.route)"
           :style="{ '--hue': game.color }"
           :disabled="isNavigating"
         >
@@ -72,11 +80,11 @@ import { useRouter } from 'vue-router';
 import { useTelegram } from '@/composables/useTelegram';
 
 const router = useRouter();
-const { user, tg,  } = useTelegram();
+const { user, tg } = useTelegram();
 
-const balance = ref(1000);
-const rating = ref(42);
-const onlinePlayers = ref(5);
+const balance = ref(0);
+const rating = ref(0);
+const onlinePlayers = ref(0);
 const isNavigating = ref(false);
 
 const games = ref([
@@ -86,7 +94,7 @@ const games = ref([
     emoji: '🚀',
     description: 'Ride the rocket',
     route: '/crash',
-    color: 200
+    color: 200,
   },
   {
     id: 2,
@@ -94,7 +102,7 @@ const games = ref([
     emoji: '🎰',
     description: 'Spin to win',
     route: '/slots',
-    color: 280
+    color: 280,
   },
   {
     id: 3,
@@ -102,7 +110,7 @@ const games = ref([
     emoji: '🎲',
     description: 'Roll for fortune',
     route: '/dice',
-    color: 50
+    color: 50,
   },
   {
     id: 4,
@@ -110,7 +118,7 @@ const games = ref([
     emoji: '🪙',
     description: 'Heads or tails?',
     route: '/coinflip',
-    color: 120
+    color: 120,
   },
   {
     id: 5,
@@ -118,8 +126,8 @@ const games = ref([
     emoji: '🎡',
     description: 'Spin the wheel',
     route: '/roulette',
-    color: 300
-  }
+    color: 300,
+  },
 ]);
 
 const formatNumber = (num: number): string => {
@@ -128,12 +136,12 @@ const formatNumber = (num: number): string => {
 
 const navigateTo = async (route: string) => {
   if (isNavigating.value) return;
-  
+
   isNavigating.value = true;
-  
+
   // Добавляем небольшую задержку для анимации
-  await new Promise(resolve => setTimeout(resolve, 150));
-  
+  await new Promise((resolve) => setTimeout(resolve, 150));
+
   try {
     await router.push(route);
   } catch (error) {
@@ -143,30 +151,44 @@ const navigateTo = async (route: string) => {
   }
 };
 
-// Имитация обновления данных
-onMounted(() => {
-  // Расширяем на весь экран в Telegram
+// Функция для получения данных пользователя
+const fetchUserData = async () => {
+  try {
+    // Здесь будет запрос к вашему бэкенду
+    // Пример: const response = await fetch('/api/user/data');
+    // const data = await response.json();
+
+    // Временные данные для примера
+    balance.value = 1000;
+    rating.value = 42;
+    onlinePlayers.value = 1250;
+  } catch (error) {
+    console.error('Error fetching user data:', error);
+  }
+};
+
+// Функция для получения данных из Telegram
+const initTelegramData = () => {
   if (tg) {
+    // Расширяем на весь экран
     tg.expand();
     tg.enableClosingConfirmation();
+
+    // Можно получить дополнительные данные из Telegram
+    const initData = tg.initData;
+    if (initData) {
+      console.log('Telegram init data:', initData);
+    }
   }
+};
 
-  // Имитация загрузки данных
-  setTimeout(() => {
-    balance.value = 2540;
-    rating.value = 87;
-  }, 800);
-
-  // Имитация изменения онлайн игроков
-  setInterval(() => {
-    onlinePlayers.value += Math.random() > 0.5 ? 1 : -1;
-    if (onlinePlayers.value < 1200) onlinePlayers.value = 1200;
-    if (onlinePlayers.value > 1300) onlinePlayers.value = 1300;
-  }, 5000);
+onMounted(() => {
+  initTelegramData();
+  fetchUserData();
 });
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .home-container {
   min-height: calc(100vh - 58px);
   position: relative;
@@ -198,7 +220,7 @@ onMounted(() => {
     radial-gradient(1px 1px at 50% 20%, #eeeeee, transparent),
     radial-gradient(1px 1px at 70% 70%, #ffffff, transparent),
     radial-gradient(1px 1px at 90% 30%, #cccccc, transparent),
-    radial-gradient(1px 1px at 20% 80%, #eeeeee, transparent), 
+    radial-gradient(1px 1px at 20% 80%, #eeeeee, transparent),
     radial-gradient(1px 1px at 80% 50%, #ffffff, transparent),
     radial-gradient(1px 1px at 40% 60%, #cccccc, transparent),
     radial-gradient(2px 2px at 20% 30%, #ffffff, transparent),
@@ -219,7 +241,7 @@ onMounted(() => {
     radial-gradient(2px 2px at 45% 45%, #ffffff, transparent),
     radial-gradient(1px 1px at 65% 65%, #cccccc, transparent),
     radial-gradient(1px 1px at 95% 95%, #eeeeee, transparent),
-    radial-gradient(2px 2px at 5% 5%, #ffffff, transparent),  
+    radial-gradient(2px 2px at 5% 5%, #ffffff, transparent),
     radial-gradient(1px 1px at 50% 90%, #cccccc, transparent),
     radial-gradient(1px 1px at 90% 50%, #eeeeee, transparent),
     radial-gradient(2px 2px at 20% 20%, #ffffff, transparent),
@@ -234,7 +256,7 @@ onMounted(() => {
     radial-gradient(2px 2px at 75% 65%, #ffffff, transparent),
     radial-gradient(1px 1px at 55% 55%, #cccccc, transparent),
     radial-gradient(1px 1px at 35% 25%, #eeeeee, transparent),
-    radial-gradient(2px 2px at 65% 75%, #ffffff, transparent),  
+    radial-gradient(2px 2px at 65% 75%, #ffffff, transparent),
     radial-gradient(1px 1px at 15% 45%, #cccccc, transparent),
     radial-gradient(1px 1px at 85% 85%, #eeeeee, transparent);
   background-repeat: repeat;
@@ -247,17 +269,17 @@ onMounted(() => {
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: 
-    radial-gradient(1px 1px at 25% 35%, rgba(255,255,255,0.8), transparent),
-    radial-gradient(3px 3px at 75% 65%, rgba(200,200,255,0.6), transparent),
-    radial-gradient(1px 1px at 50% 50%, rgba(255,255,200,0.7), transparent),
-    radial-gradient(4px 4px at 10% 80%, rgba(255,200,200,0.5), transparent),
-    radial-gradient(2px 2px at 90% 20%, rgba(200,255,200,0.6), transparent),
-    radial-gradient(1px 1px at 40% 70%, rgba(255,255,255,0.8), transparent),
-    radial-gradient(3px 3px at 60% 30%, rgba(200,200,255,0.6), transparent),
-    radial-gradient(1px 1px at 20% 40%, rgba(255,255,200,0.7), transparent),
-    radial-gradient(4px 4px at 80% 90%, rgba(255,200,200,0.5), transparent),
-    radial-gradient(2px 2px at 30% 10%, rgba(200,255,200,0.6), transparent);
+  background-image:
+    radial-gradient(1px 1px at 25% 35%, rgba(255, 255, 255, 0.8), transparent),
+    radial-gradient(3px 3px at 75% 65%, rgba(200, 200, 255, 0.6), transparent),
+    radial-gradient(1px 1px at 50% 50%, rgba(255, 255, 200, 0.7), transparent),
+    radial-gradient(4px 4px at 10% 80%, rgba(255, 200, 200, 0.5), transparent),
+    radial-gradient(2px 2px at 90% 20%, rgba(200, 255, 200, 0.6), transparent),
+    radial-gradient(1px 1px at 40% 70%, rgba(255, 255, 255, 0.8), transparent),
+    radial-gradient(3px 3px at 60% 30%, rgba(200, 200, 255, 0.6), transparent),
+    radial-gradient(1px 1px at 20% 40%, rgba(255, 255, 200, 0.7), transparent),
+    radial-gradient(4px 4px at 80% 90%, rgba(255, 200, 200, 0.5), transparent),
+    radial-gradient(2px 2px at 30% 10%, rgba(200, 255, 200, 0.6), transparent);
   background-repeat: repeat;
   animation: twinkle 4s ease-in-out infinite alternate;
 }
@@ -268,44 +290,57 @@ onMounted(() => {
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: 
-    radial-gradient(8px 8px at 20% 40%, rgba(100,100,255,0.15), transparent),
-    radial-gradient(12px 12px at 70% 60%, rgba(150,150,255,0.1), transparent),
-    radial-gradient(10px 10px at 50% 20%, rgba(120,120,255,0.12), transparent),
-    radial-gradient(15px 15px at 80% 80%, rgba(180,180,255,0.1), transparent),
-    radial-gradient(9px 9px at 30% 70%, rgba(130,130,255,0.13), transparent),
-    radial-gradient(14px 14px at 60% 30%, rgba(160,160,255,0.11), transparent),
-    radial-gradient(11px 11px at 40% 50%, rgba(140,140,255,0.12), transparent), 
-    radial-gradient(13px 13px at 90% 10%, rgba(170,170,255,0.1), transparent),
-    radial-gradient(7px 7px at 10% 90%, rgba(110,110,255,0.14), transparent),
-    radial-gradient(16px 16px at 25% 25%, rgba(190,190,255,0.1), transparent),
-    radial-gradient(8px 8px at 75% 75%, rgba(100,100,255,0.15), transparent),
-    radial-gradient(12px 12px at 35% 15%, rgba(150,150,255,0.1), transparent),
-    radial-gradient(10px 10px at 55% 85%, rgba(120,120,255,0.12), transparent),
-    radial-gradient(15px 15px at 85% 45%, rgba(180,180,255,0.1), transparent),
-    radial-gradient(9px 9px at 45% 65%, rgba(130,130,255,0.13), transparent),
-    radial-gradient(14px 14px at 65% 35%, rgba(160,160,255,0.11), transparent),
-    radial-gradient(11px 11px at 95% 55%, rgba(140,140,255,0.12), transparent), 
-    radial-gradient(13px 13px at 5% 5%, rgba(170,170,255,0.1), transparent),
-    radial-gradient(7px 7px at 15% 95%, rgba(110,110,255,0.14), transparent),
-    radial-gradient(16px 16px at 50% 50%, rgba(190,190,255,0.1), transparent);
+  background-image:
+    radial-gradient(8px 8px at 20% 40%, rgba(100, 100, 255, 0.15), transparent),
+    radial-gradient(12px 12px at 70% 60%, rgba(150, 150, 255, 0.1), transparent),
+    radial-gradient(10px 10px at 50% 20%, rgba(120, 120, 255, 0.12), transparent),
+    radial-gradient(15px 15px at 80% 80%, rgba(180, 180, 255, 0.1), transparent),
+    radial-gradient(9px 9px at 30% 70%, rgba(130, 130, 255, 0.13), transparent),
+    radial-gradient(14px 14px at 60% 30%, rgba(160, 160, 255, 0.11), transparent),
+    radial-gradient(11px 11px at 40% 50%, rgba(140, 140, 255, 0.12), transparent),
+    radial-gradient(13px 13px at 90% 10%, rgba(170, 170, 255, 0.1), transparent),
+    radial-gradient(7px 7px at 10% 90%, rgba(110, 110, 255, 0.14), transparent),
+    radial-gradient(16px 16px at 25% 25%, rgba(190, 190, 255, 0.1), transparent),
+    radial-gradient(8px 8px at 75% 75%, rgba(100, 100, 255, 0.15), transparent),
+    radial-gradient(12px 12px at 35% 15%, rgba(150, 150, 255, 0.1), transparent),
+    radial-gradient(10px 10px at 55% 85%, rgba(120, 120, 255, 0.12), transparent),
+    radial-gradient(15px 15px at 85% 45%, rgba(180, 180, 255, 0.1), transparent),
+    radial-gradient(9px 9px at 45% 65%, rgba(130, 130, 255, 0.13), transparent),
+    radial-gradient(14px 14px at 65% 35%, rgba(160, 160, 255, 0.11), transparent),
+    radial-gradient(11px 11px at 95% 55%, rgba(140, 140, 255, 0.12), transparent),
+    radial-gradient(13px 13px at 5% 5%, rgba(170, 170, 255, 0.1), transparent),
+    radial-gradient(7px 7px at 15% 95%, rgba(110, 110, 255, 0.14), transparent),
+    radial-gradient(16px 16px at 50% 50%, rgba(190, 190, 255, 0.1), transparent);
   background-repeat: repeat;
   animation: cloudsMove 80s linear infinite;
 }
 
 @keyframes starsMove {
-  from { transform: translateY(0) rotate(0deg); }
-  to { transform: translateY(-100px) rotate(1deg); }
+  from {
+    transform: translateY(0) rotate(0deg);
+  }
+  to {
+    transform: translateY(-100px) rotate(1deg);
+  }
 }
 
 @keyframes twinkle {
-  0%, 100% { opacity: 0.3; }
-  50% { opacity: 1; }
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 
 @keyframes cloudsMove {
-  from { transform: translateX(0); }
-  to { transform: translateX(50px); }
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(50px);
+  }
 }
 
 /* Шапка */
@@ -318,21 +353,49 @@ onMounted(() => {
   position: sticky;
   top: 0;
   z-index: 100;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
 }
 
 .user-info {
   display: flex;
-  flex-direction: column;
   gap: 12px;
+  align-items: center;
+}
+
+.username {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  background: linear-gradient(45deg, #ffffff, #cccccc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+
+  @include lines-limit(1);
 }
 
 .avatar {
   width: 44px;
   height: 44px;
+  min-width: fit-content;
   border-radius: 50%;
   overflow: hidden;
   border: 2px solid rgba(255, 255, 255, 0.2);
   background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+}
+
+.avatar-default {
+  width: 40px;
+  height: 40px;
+  min-width: fit-content;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
 }
 
 .avatar img {
@@ -341,20 +404,11 @@ onMounted(() => {
   object-fit: cover;
 }
 
-.user-details{
+.user-details {
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
-
-.user-details h2 {
-  margin: 0;
-  font-size: 16px;
-  font-weight: 600;
-  background: linear-gradient(45deg, #ffffff, #cccccc);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  min-width: fit-content;
 }
 
 .stats {
@@ -364,7 +418,8 @@ onMounted(() => {
   font-size: 12px;
 }
 
-.balance, .rating {
+.balance,
+.rating {
   padding: 2px 8px;
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.1);
@@ -427,10 +482,12 @@ onMounted(() => {
   left: -2px;
   right: -2px;
   bottom: -2px;
-  background: linear-gradient(45deg, 
+  background: linear-gradient(
+    45deg,
     hsl(var(--hue, 200), 80%, 60%),
     hsl(calc(var(--hue, 200) + 40), 80%, 60%),
-    hsl(var(--hue, 200), 80%, 60%));
+    hsl(var(--hue, 200), 80%, 60%)
+  );
   z-index: -1;
   border-radius: 20px;
   opacity: 0.7;
@@ -454,7 +511,7 @@ onMounted(() => {
 .game-icon {
   font-size: 32px;
   margin-bottom: 8px;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
 .game-title {
@@ -480,9 +537,7 @@ onMounted(() => {
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle at center, 
-    rgba(255, 255, 255, 0.15) 0%, 
-    transparent 70%);
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
   opacity: 0;
   transition: opacity 0.3s ease;
 }
@@ -493,10 +548,12 @@ onMounted(() => {
   left: -50%;
   width: 200%;
   height: 200%;
-  background: linear-gradient(45deg, 
+  background: linear-gradient(
+    45deg,
     transparent 0%,
-    rgba(255,255,255,0.1) 50%,
-    transparent 100%);
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent 100%
+  );
   transform: rotate(45deg);
   opacity: 0;
   transition: opacity 0.3s ease;
@@ -545,29 +602,61 @@ onMounted(() => {
 
 /* Анимации */
 @keyframes gradientFlow {
-  0% { background-position: 0% 50%; }
-  20% { background-position: 100% 50%; }
-  30% { background-position: 50% 100%; }
-  40% { background-position: 0% 50%; }
-  60% { background-position: 100% 50%; }
-  70% { background-position: 50% 100%; }
-  80% { background-position: 0% 50%; }
-  100% { background-position: 100% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+  20% {
+    background-position: 100% 50%;
+  }
+  30% {
+    background-position: 50% 100%;
+  }
+  40% {
+    background-position: 0% 50%;
+  }
+  60% {
+    background-position: 100% 50%;
+  }
+  70% {
+    background-position: 50% 100%;
+  }
+  80% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
 }
 
 @keyframes borderPulse {
-  0%, 100% { opacity: 0.6; }
-  50% { opacity: 0.9; }
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 0.9;
+  }
 }
 
 @keyframes shine {
-  0% { transform: rotate(45deg) translateX(-100%) translateY(-100%); }
-  100% { transform: rotate(45deg) translateX(100%) translateY(100%); }
+  0% {
+    transform: rotate(45deg) translateX(-100%) translateY(-100%);
+  }
+  100% {
+    transform: rotate(45deg) translateX(100%) translateY(100%);
+  }
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 0.6; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.2); }
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
 }
 
 /* Адаптивность для мобильных устройств */
@@ -576,25 +665,25 @@ onMounted(() => {
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
   }
-  
+
   .game-card {
     padding: 16px 12px;
     min-height: 110px;
   }
-  
+
   .main-title {
     font-size: 36px;
     line-height: normal;
   }
-  
+
   .game-icon {
     font-size: 28px;
   }
-  
+
   .game-title {
     font-size: 14px;
   }
-  
+
   .game-description {
     font-size: 10px;
   }
@@ -604,11 +693,11 @@ onMounted(() => {
   .games-container {
     grid-template-columns: 1fr;
   }
-  
+
   .app-header {
     padding: 10px 12px;
   }
-  
+
   .avatar {
     width: 40px;
     height: 40px;

@@ -43,7 +43,7 @@
             {{ currentResult.value }}
           </div>
           <div class="result-text" :class="{ win: isWin, loss: !isWin }">
-            {{ isWin ? "YOU WIN!" : "YOU LOSE!" }}
+            {{ isWin ? 'YOU WIN!' : 'YOU LOSE!' }}
           </div>
           <div class="result-amount" v-if="isWin">+{{ formatNumber(winAmount) }} 🪙</div>
         </div>
@@ -110,7 +110,7 @@
           <div class="stat-item">
             <div class="stat-label">Last Number</div>
             <div class="stat-value" :class="getNumberClass(lastResult)">
-              {{ lastResult?.value || "-" }}
+              {{ lastResult?.value || '-' }}
             </div>
           </div>
           <div class="stat-item">
@@ -146,8 +146,8 @@
     <!-- Уведомление -->
     <div v-if="showResultNotification" class="result-notification">
       <div class="notification-content" :class="{ win: isWin, loss: !isWin }">
-        <div class="notification-emoji">{{ isWin ? "🎉" : "🎡" }}</div>
-        <div class="notification-title">{{ isWin ? "WINNER!" : "BETTER LUCK!" }}</div>
+        <div class="notification-emoji">{{ isWin ? '🎉' : '🎡' }}</div>
+        <div class="notification-title">{{ isWin ? 'WINNER!' : 'BETTER LUCK!' }}</div>
         <div class="notification-text">
           {{
             isWin
@@ -158,71 +158,66 @@
         <div class="notification-details" v-if="isWin">
           {{ currentBetType }} • x{{ currentPayout }}
         </div>
-        <button class="notification-btn" @click="showResultNotification = false">
-          CONTINUE
-        </button>
+        <button class="notification-btn" @click="showResultNotification = false">CONTINUE</button>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
-import { useRouter } from "vue-router";
-
-const router = useRouter();
+import { ref, computed, onMounted } from 'vue';
 
 // Номера рулетки (европейская - только 0)
 const numbers = ref([
-  { value: 0, color: "green" },
-  { value: 32, color: "red" },
-  { value: 15, color: "black" },
-  { value: 19, color: "red" },
-  { value: 4, color: "black" },
-  { value: 21, color: "red" },
-  { value: 2, color: "black" },
-  { value: 25, color: "red" },
-  { value: 17, color: "black" },
-  { value: 34, color: "red" },
-  { value: 6, color: "black" },
-  { value: 27, color: "red" },
-  { value: 13, color: "black" },
-  { value: 36, color: "red" },
-  { value: 11, color: "black" },
-  { value: 30, color: "red" },
-  { value: 8, color: "black" },
-  { value: 23, color: "red" },
-  { value: 10, color: "black" },
-  { value: 5, color: "red" },
-  { value: 24, color: "black" },
-  { value: 16, color: "red" },
-  { value: 33, color: "black" },
-  { value: 1, color: "red" },
-  { value: 20, color: "black" },
-  { value: 14, color: "red" },
-  { value: 31, color: "black" },
-  { value: 9, color: "red" },
-  { value: 22, color: "black" },
-  { value: 18, color: "red" },
-  { value: 29, color: "black" },
-  { value: 7, color: "red" },
-  { value: 28, color: "black" },
-  { value: 12, color: "red" },
-  { value: 35, color: "black" },
-  { value: 3, color: "red" },
-  { value: 26, color: "black" },
+  { value: 0, color: 'green' },
+  { value: 32, color: 'red' },
+  { value: 15, color: 'black' },
+  { value: 19, color: 'red' },
+  { value: 4, color: 'black' },
+  { value: 21, color: 'red' },
+  { value: 2, color: 'black' },
+  { value: 25, color: 'red' },
+  { value: 17, color: 'black' },
+  { value: 34, color: 'red' },
+  { value: 6, color: 'black' },
+  { value: 27, color: 'red' },
+  { value: 13, color: 'black' },
+  { value: 36, color: 'red' },
+  { value: 11, color: 'black' },
+  { value: 30, color: 'red' },
+  { value: 8, color: 'black' },
+  { value: 23, color: 'red' },
+  { value: 10, color: 'black' },
+  { value: 5, color: 'red' },
+  { value: 24, color: 'black' },
+  { value: 16, color: 'red' },
+  { value: 33, color: 'black' },
+  { value: 1, color: 'red' },
+  { value: 20, color: 'black' },
+  { value: 14, color: 'red' },
+  { value: 31, color: 'black' },
+  { value: 9, color: 'red' },
+  { value: 22, color: 'black' },
+  { value: 18, color: 'red' },
+  { value: 29, color: 'black' },
+  { value: 7, color: 'red' },
+  { value: 28, color: 'black' },
+  { value: 12, color: 'red' },
+  { value: 35, color: 'black' },
+  { value: 3, color: 'red' },
+  { value: 26, color: 'black' },
 ]);
 
 // Типы ставок
 const betTypes = ref([
-  { id: "number", name: "Number", emoji: "🔢", payout: 36, chance: 2.7 },
-  { id: "red", name: "Red", emoji: "🔴", payout: 2, chance: 48.6 },
-  { id: "black", name: "Black", emoji: "⚫", payout: 2, chance: 48.6 },
-  { id: "even", name: "Even", emoji: "🔢", payout: 2, chance: 48.6 },
-  { id: "odd", name: "Odd", emoji: "🔢", payout: 2, chance: 48.6 },
-  { id: "dozen1", name: "1-12", emoji: "1️⃣", payout: 3, chance: 32.4 },
-  { id: "dozen2", name: "13-24", emoji: "2️⃣", payout: 3, chance: 32.4 },
-  { id: "dozen3", name: "25-36", emoji: "3️⃣", payout: 3, chance: 32.4 },
+  { id: 'number', name: 'Number', emoji: '🔢', payout: 36, chance: 2.7 },
+  { id: 'red', name: 'Red', emoji: '🔴', payout: 2, chance: 48.6 },
+  { id: 'black', name: 'Black', emoji: '⚫', payout: 2, chance: 48.6 },
+  { id: 'even', name: 'Even', emoji: '🔢', payout: 2, chance: 48.6 },
+  { id: 'odd', name: 'Odd', emoji: '🔢', payout: 2, chance: 48.6 },
+  { id: 'dozen1', name: '1-12', emoji: '1️⃣', payout: 3, chance: 32.4 },
+  { id: 'dozen2', name: '13-24', emoji: '2️⃣', payout: 3, chance: 32.4 },
+  { id: 'dozen3', name: '25-36', emoji: '3️⃣', payout: 3, chance: 32.4 },
 ]);
 
 // Состояние игры
@@ -232,8 +227,8 @@ const isSpinning = ref(false);
 const showResult = ref(false);
 const showResultNotification = ref(false);
 const isWin = ref(false);
-const currentBetType = ref("red");
-const currentResult = ref({ value: 0, color: "green" });
+const currentBetType = ref('red');
+const currentResult = ref({ value: 0, color: 'green' });
 const winAmount = ref(0);
 const lastWin = ref(0);
 const lastResult = ref();
@@ -274,12 +269,12 @@ const changeBet = (amount: number) => {
 };
 
 const getNumberClass = (number: any) => {
-  if (!number || typeof number === "undefined") return "";
+  if (!number || typeof number === 'undefined') return '';
 
   // Если передано просто число, находим соответствующий объект
-  if (typeof number === "number") {
+  if (typeof number === 'number') {
     const numberObj = numbers.value.find((n) => n.value === number);
-    return numberObj ? `number-${numberObj.color}` : "";
+    return numberObj ? `number-${numberObj.color}` : '';
   }
 
   // Если передан объект с цветом
@@ -287,7 +282,7 @@ const getNumberClass = (number: any) => {
     return `number-${number.color}`;
   }
 
-  return "";
+  return '';
 };
 
 const getNumberStyle = (number: any) => {
@@ -296,31 +291,6 @@ const getNumberStyle = (number: any) => {
   return {
     transform: `rotate(${angle}deg)`,
   };
-};
-
-const checkWin = (result: any) => {
-  const betType = currentBetType.value;
-
-  switch (betType) {
-    case "number":
-      return result.value === 0; // Для простоты всегда выигрывает 0
-    case "red":
-      return result.color === "red";
-    case "black":
-      return result.color === "black";
-    case "even":
-      return result.value !== 0 && result.value % 2 === 0;
-    case "odd":
-      return result.value % 2 === 1;
-    case "dozen1":
-      return result.value >= 1 && result.value <= 12;
-    case "dozen2":
-      return result.value >= 13 && result.value <= 24;
-    case "dozen3":
-      return result.value >= 25 && result.value <= 36;
-    default:
-      return false;
-  }
 };
 
 const spinWheel = () => {
@@ -361,16 +331,14 @@ const finishSpin = () => {
   // Определяем выпавший номер
   const finalRotation = wheelRotation.value % 360;
   const sectorAngle = 360 / numbers.value.length;
-  const winningIndex =
-    Math.floor((360 - finalRotation) / sectorAngle) % numbers.value.length;
+  const winningIndex = Math.floor((360 - finalRotation) / sectorAngle) % numbers.value.length;
   const result = numbers.value[winningIndex];
+
+  // Добавляем проверку на undefined
+  if (!result) return; // Если результат не найден, выходим
 
   currentResult.value = result;
   lastResult.value = result;
-
-  // Проверяем выигрыш
-  isWin.value = checkWin(result);
-  showResult.value = true;
 
   // Сохраняем в историю
   spinHistory.value.unshift(result);
@@ -396,7 +364,12 @@ onMounted(() => {
   // Заполняем историю начальными значениями
   for (let i = 0; i < 5; i++) {
     const randomIndex = Math.floor(Math.random() * numbers.value.length);
-    spinHistory.value.push(numbers.value[randomIndex]);
+    const randomNumber = numbers.value[randomIndex];
+
+    // Добавляем проверку на undefined
+    if (randomNumber) {
+      spinHistory.value.push(randomNumber);
+    }
   }
 });
 </script>
@@ -421,7 +394,8 @@ onMounted(() => {
 }
 
 .mobile-stars {
-  background-image: radial-gradient(1px 1px at 20% 30%, #ffffff40, transparent),
+  background-image:
+    radial-gradient(1px 1px at 20% 30%, #ffffff40, transparent),
     radial-gradient(1px 1px at 80% 70%, #cccccc40, transparent);
   background-repeat: repeat;
   animation: starsMove 80s linear infinite;
@@ -465,6 +439,7 @@ onMounted(() => {
   font-size: 22px;
   font-weight: 700;
   background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }

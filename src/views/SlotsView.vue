@@ -20,23 +20,15 @@
         <div class="slot-frame">
           <!-- Барабаны -->
           <div class="reels-container">
-            <div 
-              v-for="(reel, index) in 3" 
-              :key="index" 
-              class="reel-wrapper"
-            >
-              <div 
-                class="reel"
-                :class="{ spinning: isSpinning }"
-                :style="reelStyle(index)"
-              >
+            <div v-for="(reel, index) in 3" :key="index" class="reel-wrapper">
+              <div class="reel" :class="{ spinning: isSpinning }" :style="reelStyle(index)">
                 <!-- Бесконечные символы -->
-                <div 
-                  v-for="symbolIndex in visibleSymbolIndices" 
+                <div
+                  v-for="symbolIndex in visibleSymbolIndices"
                   :key="symbolIndex"
                   class="symbol"
-                  :class="{ 
-                    winning: isWinning && symbolIndex % symbols.length === targetOffsets[index] 
+                  :class="{
+                    winning: isWinning && symbolIndex % symbols.length === targetOffsets[index],
                   }"
                 >
                   {{ symbols[symbolIndex % symbols.length] }}
@@ -54,7 +46,7 @@
 
         <!-- Кнопка Spin -->
         <div class="spin-section">
-          <button 
+          <button
             class="spin-button"
             :class="{ spinning: isSpinning }"
             @click="startSpin"
@@ -83,10 +75,10 @@
           <div class="bet-info">
             <span>Bet: {{ formatNumber(betAmount) }} 🪙</span>
           </div>
-          
+
           <div class="bet-buttons">
-            <button 
-              v-for="bet in [10, 50, 100]" 
+            <button
+              v-for="bet in [10, 50, 100]"
               :key="bet"
               @click="betAmount = bet"
               :class="{ active: betAmount === bet }"
@@ -137,9 +129,6 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-
-const router = useRouter();
 
 // Символы для слотов
 const symbols = ['🍒', '🍋', '🍊', '🍇', '⭐', '7️⃣', '🔔', '💎'];
@@ -151,7 +140,7 @@ const paytable = {
   '⭐': 10,
   '🔔': 15,
   '7️⃣': 20,
-  '💎': 50
+  '💎': 50,
 };
 
 // Состояние игры
@@ -176,7 +165,7 @@ const visibleSymbolIndices = computed(() => {
 
 // Видимые символы на барабанах
 const visibleSymbols = computed(() => {
-  return reelOffsets.value.map((offset, reelIndex) => {
+  return reelOffsets.value.map((offset) => {
     const currentSymbolIndex = Math.floor(offset) % symbols.length;
     return symbols[currentSymbolIndex];
   });
@@ -184,10 +173,12 @@ const visibleSymbols = computed(() => {
 
 // Стиль для барабана
 const reelStyle = (reelIndex: number) => {
-  const offset = -reelOffsets.value[reelIndex] * 33; // 33px высота символа
+  const offset = -(reelOffsets.value[reelIndex]! * 33); // 33px высота символа
   return {
     transform: `translateY(${offset}px)`,
-    transition: isSpinning.value ? 'transform 0.1s linear' : 'transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1)'
+    transition: isSpinning.value
+      ? 'transform 0.1s linear'
+      : 'transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1)',
   };
 };
 
@@ -198,11 +189,13 @@ const formatNumber = (num: number): string => {
 
 const calculateWin = (): number => {
   // Проверяем выигрышные комбинации (3 одинаковых символа)
-  if (visibleSymbols.value[0] === visibleSymbols.value[1] && 
-      visibleSymbols.value[1] === visibleSymbols.value[2]) {
+  if (
+    visibleSymbols.value[0] === visibleSymbols.value[1] &&
+    visibleSymbols.value[1] === visibleSymbols.value[2]
+  ) {
     return betAmount.value * paytable[visibleSymbols.value[0] as keyof typeof paytable];
   }
-  
+
   return 0;
 };
 
@@ -222,7 +215,7 @@ const startSpin = () => {
   targetOffsets.value = [
     Math.floor(Math.random() * symbols.length),
     Math.floor(Math.random() * symbols.length),
-    Math.floor(Math.random() * symbols.length)
+    Math.floor(Math.random() * symbols.length),
   ];
 
   // Запускаем вращение
@@ -244,19 +237,19 @@ const startSpin = () => {
 
 const finishSpin = () => {
   // Устанавливаем конечные позиции
-  reelOffsets.value = targetOffsets.value.map(offset => offset);
-  
+  reelOffsets.value = targetOffsets.value.map((offset) => offset);
+
   // Рассчитываем выигрыш
   const win = calculateWin();
   resultWin.value = win;
-  
+
   if (win > 0) {
     // Выигрыш
     winAmount.value = win;
     lastWin.value = win;
     balance.value += win;
     isWinning.value = true;
-    
+
     setTimeout(() => {
       showResult.value = true;
       if (win > betAmount.value * 10) {
@@ -280,7 +273,7 @@ onMounted(() => {
   reelOffsets.value = [
     Math.floor(Math.random() * symbols.length),
     Math.floor(Math.random() * symbols.length),
-    Math.floor(Math.random() * symbols.length)
+    Math.floor(Math.random() * symbols.length),
   ];
   targetOffsets.value = [...reelOffsets.value];
 });
@@ -306,7 +299,7 @@ onMounted(() => {
 }
 
 .stars {
-  background-image: 
+  background-image:
     radial-gradient(2px 2px at 20% 30%, #ffffff, transparent),
     radial-gradient(1px 1px at 40% 70%, #cccccc, transparent);
   background-repeat: repeat;
@@ -317,9 +310,9 @@ onMounted(() => {
   position: absolute;
   width: 100%;
   height: 100%;
-  background-image: 
-    radial-gradient(1px 1px at 50% 20%, rgba(255,200,100,0.6), transparent),
-    radial-gradient(1px 1px at 30% 60%, rgba(100,200,255,0.6), transparent);
+  background-image:
+    radial-gradient(1px 1px at 50% 20%, rgba(255, 200, 100, 0.6), transparent),
+    radial-gradient(1px 1px at 30% 60%, rgba(100, 200, 255, 0.6), transparent);
   animation: particlesFloat 20s ease-in-out infinite alternate;
 }
 
@@ -348,6 +341,7 @@ onMounted(() => {
   margin: 0;
   font-size: 24px;
   background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -422,10 +416,12 @@ onMounted(() => {
   left: 0;
   right: 0;
   height: 40px;
-  background: linear-gradient(180deg, 
-    rgba(0,0,0,0.9) 0%, 
-    transparent 50%, 
-    rgba(0,0,0,0.9) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.9) 0%,
+    transparent 50%,
+    rgba(0, 0, 0, 0.9) 100%
+  );
   pointer-events: none;
   z-index: 2;
 }
@@ -444,11 +440,13 @@ onMounted(() => {
   left: 0;
   right: 0;
   bottom: 40px;
-  background: linear-gradient(180deg, 
-    rgba(0,0,0,0.6) 0%, 
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.6) 0%,
     transparent 20%,
     transparent 80%,
-    rgba(0,0,0,0.6) 100%);
+    rgba(0, 0, 0, 0.6) 100%
+  );
   pointer-events: none;
   z-index: 1;
 }
@@ -459,12 +457,7 @@ onMounted(() => {
   left: 20px;
   right: 20px;
   height: 3px;
-  background: linear-gradient(90deg, 
-    transparent, 
-    #ffd93d, 
-    #ff6b6b, 
-    #ffd93d, 
-    transparent);
+  background: linear-gradient(90deg, transparent, #ffd93d, #ff6b6b, #ffd93d, transparent);
   transform: translateY(-20px);
   box-shadow: 0 0 20px rgba(255, 217, 61, 0.7);
   z-index: 3;
@@ -621,7 +614,8 @@ onMounted(() => {
 }
 
 /* Уведомления */
-.result-notification, .big-win-notification {
+.result-notification,
+.big-win-notification {
   position: fixed;
   top: 0;
   left: 0;
@@ -713,9 +707,18 @@ onMounted(() => {
   animation: confettiFall 3s linear infinite;
 }
 
-.confetti:nth-child(1) { left: 10%; animation-delay: 0s; }
-.confetti:nth-child(2) { left: 50%; animation-delay: 1s; }
-.confetti:nth-child(3) { left: 90%; animation-delay: 2s; }
+.confetti:nth-child(1) {
+  left: 10%;
+  animation-delay: 0s;
+}
+.confetti:nth-child(2) {
+  left: 50%;
+  animation-delay: 1s;
+}
+.confetti:nth-child(3) {
+  left: 90%;
+  animation-delay: 2s;
+}
 
 .big-win-emoji {
   font-size: 64px;
@@ -750,7 +753,8 @@ onMounted(() => {
 
 /* Анимации */
 @keyframes symbolWin {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
     filter: brightness(1) drop-shadow(0 0 5px gold);
   }
@@ -765,26 +769,26 @@ onMounted(() => {
     height: 100px;
     gap: 8px;
   }
-  
+
   .reel-wrapper {
     height: 100px;
   }
-  
+
   .symbol {
     height: 33px;
     font-size: 20px;
     min-height: 33px;
   }
-  
+
   .reel-overlay {
     height: 33px;
   }
-  
+
   .reel-mask {
     top: 33px;
     bottom: 33px;
   }
-  
+
   .payline {
     transform: translateY(-2px);
     opacity: 0.3;
