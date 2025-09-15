@@ -51,36 +51,30 @@
             <span>Bet amount:</span>
             <div class="amount-controls">
               <button @click="changeBet(-10)">-10</button>
-              <input 
-                v-model.number="betAmount" 
-                type="number" 
-                min="10" 
+              <input
+                v-model.number="betAmount"
+                type="number"
+                min="10"
                 max="1000"
                 @input="validateBet"
-              >
+              />
               <button @click="changeBet(10)">+10</button>
             </div>
           </div>
 
           <div class="auto-cashout">
             <span>Auto cashout: x{{ autoCashout.toFixed(2) }}</span>
-            <input 
-              v-model.number="autoCashout" 
-              type="range" 
-              min="1.1" 
-              max="10" 
-              step="0.1"
-            >
+            <input v-model.number="autoCashout" type="range" min="1.1" max="10" step="0.1" />
           </div>
         </div>
 
         <!-- Кнопка игры -->
-        <button 
-          class="play-button" 
-          :class="{ 
-            'playing': isPlaying, 
+        <button
+          class="play-button"
+          :class="{
+            playing: isPlaying,
             'cashing-out': isCashingOut,
-            'crashed': isCrashing
+            crashed: isCrashing,
           }"
           @click="handlePlayClick"
           :disabled="isPlaying && !canCashout"
@@ -92,11 +86,11 @@
         <div class="history">
           <h3>History</h3>
           <div class="history-items">
-            <div 
-              v-for="(item, index) in history" 
-              :key="index" 
+            <div
+              v-for="(item, index) in history"
+              :key="index"
               class="history-item"
-              :class="{ 'red': item < 2, 'green': item >= 2 }"
+              :class="{ red: item < 2, green: item >= 2 }"
             >
               x{{ item.toFixed(2) }}
             </div>
@@ -107,10 +101,10 @@
 
     <!-- Уведомление о результате -->
     <div v-if="showWinNotification" class="win-notification">
-      <div class="win-content" :class="{ 'crash': winAmount === 0 }">
+      <div class="win-content" :class="{ crash: winAmount === 0 }">
         <div class="win-emoji">{{ winAmount > 0 ? '🎉' : '💥' }}</div>
         <h3>{{ winAmount > 0 ? 'Cashed out!' : 'Crashed!' }}</h3>
-        <p :class="{ 'win': winAmount > 0, 'loss': winAmount === 0 }">
+        <p :class="{ win: winAmount > 0, loss: winAmount === 0 }">
           {{ winAmount > 0 ? '+' + formatNumber(winAmount) + ' 🪙' : 'Better luck next time!' }}
         </p>
         <button @click="showWinNotification = false">OK</button>
@@ -121,9 +115,6 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
-import { useRouter } from 'vue-router';
-
-const router = useRouter();
 
 // Состояние игры
 const balance = ref(1000);
@@ -156,7 +147,7 @@ const rocketStyle = computed(() => {
   const progress = Math.min(currentMultiplier.value / 10, 1);
   return {
     bottom: `${progress * 100}%`,
-    transform: `scale(${1 + progress * 0.5})`
+    transform: `scale(${1 + progress * 0.5})`,
   };
 });
 
@@ -194,7 +185,7 @@ const startGame = () => {
   isCrashing.value = false;
   currentMultiplier.value = 1.0;
   crashPoint.value = generateCrashPoint();
-  
+
   lastCrash.value = crashPoint.value;
   history.value.unshift(crashPoint.value);
   if (history.value.length > 10) history.value.pop();
@@ -204,7 +195,7 @@ const cashOut = () => {
   if (!isPlaying.value || isCashingOut.value) return;
 
   isCashingOut.value = true;
-  
+
   setTimeout(() => {
     const win = Math.floor(betAmount.value * currentMultiplier.value);
     winAmount.value = win;
@@ -248,7 +239,7 @@ const updateGame = () => {
   if (currentMultiplier.value >= crashPoint.value) {
     isCrashing.value = true;
     isPlaying.value = false;
-    
+
     setTimeout(() => {
       isCrashing.value = false;
       showCrashNotification();
@@ -297,7 +288,7 @@ onUnmounted(() => {
 }
 
 .stars {
-  background-image: 
+  background-image:
     radial-gradient(2px 2px at 20% 30%, #ffffff, transparent),
     radial-gradient(1px 1px at 40% 70%, #cccccc, transparent);
   background-repeat: repeat;
@@ -308,9 +299,9 @@ onUnmounted(() => {
   position: absolute;
   width: 100%;
   height: 100%;
-  background-image: 
-    radial-gradient(1px 1px at 50% 20%, rgba(255,200,100,0.6), transparent),
-    radial-gradient(1px 1px at 30% 60%, rgba(100,200,255,0.6), transparent);
+  background-image:
+    radial-gradient(1px 1px at 50% 20%, rgba(255, 200, 100, 0.6), transparent),
+    radial-gradient(1px 1px at 30% 60%, rgba(100, 200, 255, 0.6), transparent);
   animation: particlesFloat 20s ease-in-out infinite alternate;
 }
 
@@ -339,6 +330,7 @@ onUnmounted(() => {
   margin: 0;
   font-size: 24px;
   background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -378,7 +370,9 @@ onUnmounted(() => {
   left: 50%;
   transform: translateX(-50%);
   font-size: 24px;
-  transition: bottom 0.1s ease-out, transform 0.2s ease-out;
+  transition:
+    bottom 0.1s ease-out,
+    transform 0.2s ease-out;
   z-index: 10;
 }
 
@@ -411,6 +405,7 @@ onUnmounted(() => {
   font-size: 32px;
   font-weight: 800;
   background: linear-gradient(45deg, #4ecdc4, #45b7d1);
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   text-shadow: 0 2px 10px rgba(78, 205, 196, 0.5);
@@ -453,7 +448,8 @@ onUnmounted(() => {
   margin-bottom: 20px;
 }
 
-.bet-amount, .auto-cashout {
+.bet-amount,
+.auto-cashout {
   margin-bottom: 16px;
 }
 
@@ -618,43 +614,63 @@ onUnmounted(() => {
 }
 
 @keyframes starsMove {
-  from { transform: translateY(0); }
-  to { transform: translateY(-100px); }
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-100px);
+  }
 }
 
 @keyframes particlesFloat {
-  from { transform: translateX(0) translateY(0); }
-  to { transform: translateX(20px) translateY(20px); }
+  from {
+    transform: translateX(0) translateY(0);
+  }
+  to {
+    transform: translateX(20px) translateY(20px);
+  }
 }
 
 @keyframes crashPulse {
-  0%, 100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-  50% { opacity: 0.7; transform: translate(-50%, -50%) scale(1.1); }
+  0%,
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: translate(-50%, -50%) scale(1.1);
+  }
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
 }
 
 @media (max-width: 480px) {
   .game-header h1 {
     font-size: 20px;
   }
-  
+
   .graph-container {
     height: 150px;
     padding: 15px;
   }
-  
+
   .current-multiplier {
     font-size: 24px;
   }
-  
+
   .bet-panel {
     padding: 16px;
   }
-  
+
   .play-button {
     padding: 14px;
     font-size: 16px;

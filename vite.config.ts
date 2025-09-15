@@ -12,6 +12,30 @@ export default defineConfig({
   base: process.env.NODE_ENV === 'production' ? '/' : '/',
   build: {
     outDir: 'dist',
+    target: 'es2015',
+    cssCodeSplit: true,
     sourcemap: false,
+    minify: 'esbuild',
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['vue', 'vue-router', 'pinia'],
+        },
+      },
+    },
+    chunkSizeWarningLimit: 1000,
+  },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        silenceDeprecations: ['import'],
+        additionalData: `
+          @import "@/assets/styles/mixins";
+        `,
+      },
+    },
+  },
+  optimizeDeps: {
+    include: ['vue', 'vue-router', 'pinia'],
   },
 });
