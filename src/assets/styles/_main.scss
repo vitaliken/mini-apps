@@ -1,0 +1,32 @@
+body {
+  position: relative;
+  font-family: IBM Plex Sans, Proxima Nova, Inter, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #000000;
+  font-size: 16px;
+  line-height: 22px;
+}
+.body__closed {
+  overflow: hidden;
+}
+.body__blocked {
+  pointer-events: none;
+}
+a {
+  text-decoration: none;
+  font-weight: 400;
+  display: inline-block;
+}
+
+b {
+  font-weight: 500;
+}
+
+.link {
+  text-decoration: none;
+  font-weight: 400;
+  &_bold {
+    font-weight: 500;
+  }
+}
