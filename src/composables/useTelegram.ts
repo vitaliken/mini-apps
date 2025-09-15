@@ -1,4 +1,4 @@
-import { ref, onMounted } from "vue";
+import { ref, onMounted } from 'vue';
 
 declare global {
   interface Window {
@@ -26,7 +26,7 @@ export function useTelegram() {
   // Инициализация
   const init = (): void => {
     if (!tg) {
-      console.error("Telegram Web App not available");
+      console.error('Telegram Web App not available');
       return;
     }
 
@@ -42,14 +42,11 @@ export function useTelegram() {
     tg.expand();
     isExpanded.value = true;
 
-    console.log("Telegram Web App initialized:", tg);
+    console.log('Telegram Web App initialized:', tg);
   };
 
   // Показать основную кнопку
-  const showMainButton = (
-    text: string = "Continue",
-    color: string = "#0088cc"
-  ): void => {
+  const showMainButton = (text: string = 'Continue', color: string = '#0088cc'): void => {
     if (!tg) return;
 
     tg.MainButton.setText(text);
